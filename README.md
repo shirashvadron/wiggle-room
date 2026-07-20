@@ -4,8 +4,6 @@ An AI-guided sensory–motor companion for a baby's first 18 months — an inter
 
 **▶ Live prototype: https://shirashvadron.github.io/wiggle-room/**
 
-> Replace `USERNAME` above with your GitHub username once Pages is enabled.
-
 Final project for **Motor Learning in the Age of AI**, Tel Aviv University (Prof. Jason Friedman).
 
 ---
