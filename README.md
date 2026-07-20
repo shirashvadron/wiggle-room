@@ -1,6 +1,6 @@
 # Wiggle Room
 
-An AI-guided sensory–motor companion for a baby's first 18 months — an interactive prototype.
+An AI-guided sensory-motor companion for a baby's first 18 months - an interactive prototype.
 
 **▶ Live prototype: https://shirashvadron.github.io/wiggle-room/**
 
