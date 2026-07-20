@@ -8,8 +8,8 @@ Final project for **Motor Learning in the Age of AI**, Tel Aviv University (Prof
 
 ---
 <p align="center">
-  <a href="https://USERNAME.github.io/wiggle-room/">
-    <img src="wiggleroom.gif" width="720" alt="Wiggle Room prototype — age slider, baby's-eye view, and beat">
+  <a href="https://github.com/shirashvadron/wiggle-room/blob/main/wiggleroom.gif">
+    <img src="wiggleroom.gif" width="1080" alt="Wiggle Room prototype — age slider, baby's-eye view, and beat">
   </a>
 </p>
 
