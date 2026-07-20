@@ -1,0 +1,1012 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Wiggle Room — prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#26303B; --ink2:#1C232B;
+    --coral:#F2825C; --coral-d:#CF6743;
+    --teal:#3E8E82; --teal-d:#2F7168;
+    --gold:#D99A2B; --gold-d:#B47F1E;
+    --berry:#9B5A7A; --berry-d:#7E4460;
+    --paper:#FBF5F0; --card:#FFFFFF;
+    --mint:#E7F0EC; --peach:#FBEAE0; --goldt:#F7ECD3; --berryt:#F0E4EB;
+    --muted:#6B7783; --line:#ECE5DE;
+    --shadow:0 10px 30px rgba(38,48,59,.10);
+    --shadow-sm:0 4px 14px rgba(38,48,59,.08);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Nunito",system-ui,sans-serif; color:var(--ink);
+    background:
+      radial-gradient(1100px 520px at 12% -8%, #FDEDE4 0%, transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, #E8F1ED 0%, transparent 55%),
+      var(--paper);
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  .wrap{max-width:1200px;margin:0 auto;padding:24px 22px 100px}
+  h1,h2,h3{font-family:"Fraunces",Georgia,serif;font-weight:600;margin:0}
+  .mut{color:var(--muted)}
+  .pill{display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:5px 12px;font-weight:700;font-size:12.5px;letter-spacing:.02em}
+
+  header{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo{width:46px;height:46px;border-radius:15px;background:linear-gradient(135deg,var(--coral),#F0A07E);
+    display:grid;place-items:center;color:#fff;box-shadow:var(--shadow-sm);flex:none}
+  .logo svg{width:26px;height:26px}
+  .brand{font-family:"Fraunces",serif;font-weight:700;font-size:23px;letter-spacing:.01em}
+  .brand small{display:block;font-family:"Nunito";font-weight:700;font-size:11px;letter-spacing:.18em;color:var(--coral-d);text-transform:uppercase;margin-top:1px}
+  .demo-tag{margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:999px;padding:6px 13px;font-size:12px;font-weight:700;color:var(--muted);box-shadow:var(--shadow-sm)}
+  .demo-tag b{color:var(--coral-d)}
+
+  .shell{display:grid;grid-template-columns:minmax(0,1fr) 306px;gap:20px;align-items:start;margin-top:20px}
+  @media(max-width:980px){.shell{grid-template-columns:1fr}}
+
+  .agebar{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px 20px;box-shadow:var(--shadow)}
+  .agebar .top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .agebar .top .lab{font-weight:800;letter-spacing:.14em;font-size:11.5px;color:var(--muted);text-transform:uppercase}
+  .agebig{font-family:"Fraunces",serif;font-weight:700;font-size:29px;line-height:1;color:var(--ink)}
+  .agebig .u{font-size:16px;color:var(--muted);font-family:"Nunito";font-weight:700}
+  .stagechip{margin-left:auto}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:999px;margin:16px 0 4px;
+    background:linear-gradient(90deg,var(--teal),var(--gold) 55%,var(--coral));outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;border-radius:50%;background:#fff;
+    border:4px solid var(--coral);box-shadow:0 3px 10px rgba(38,48,59,.25);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid var(--coral);cursor:pointer}
+  .ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);font-weight:700;margin-top:2px}
+  .chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-weight:700;font-size:12.5px;color:var(--ink);cursor:pointer;transition:.15s;font-family:"Nunito"}
+  .chip:hover{border-color:var(--coral)}
+  .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);padding:20px}
+  .eyebrow{font-weight:800;letter-spacing:.14em;font-size:11px;text-transform:uppercase;color:var(--muted)}
+
+  .hero{display:grid;grid-template-columns:300px 1fr;gap:18px;margin-top:18px}
+  @media(max-width:720px){.hero{grid-template-columns:1fr}}
+  .eyecard{padding:18px;display:flex;flex-direction:column;gap:12px}
+  .scene-frame{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:1/1;background:#EAD9CC;border:1px solid var(--line)}
+  .scene{position:absolute;inset:0;transition:filter .5s ease, transform .5s ease}
+  .scene-cap{position:absolute;left:12px;bottom:12px;background:rgba(28,35,43,.72);color:#fff;border-radius:10px;padding:6px 10px;font-size:11.5px;font-weight:700}
+  .eyecard h3{font-size:18px}
+  .see-note{font-size:13.5px;color:var(--ink)}
+  .toggle-view{display:flex;gap:6px;background:#F1E9E2;border-radius:999px;padding:4px}
+  .toggle-view button{flex:1;border:none;background:transparent;border-radius:999px;padding:7px 8px;font-weight:800;font-size:12px;color:var(--muted);cursor:pointer;font-family:"Nunito"}
+  .toggle-view button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+
+  .senses{display:grid;grid-template-columns:1fr;gap:12px}
+  .sense{display:flex;gap:13px;align-items:flex-start;border-radius:16px;padding:14px 15px}
+  .sense.see{background:var(--mint)} .sense.hear{background:var(--peach)} .sense.move{background:var(--goldt)} .sense.beat{background:var(--berryt)}
+  .ic{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:#fff;flex:none;box-shadow:var(--shadow-sm)}
+  .ic svg{width:20px;height:20px}
+  .see .ic{background:var(--teal)} .hear .ic{background:var(--coral)} .move .ic{background:var(--gold)} .beat .ic{background:var(--berry)}
+  .sense .k{font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .sense .v{font-weight:700;font-size:14.5px;margin-top:1px}
+  .sense .d{font-size:12.5px;color:var(--ink);opacity:.85;margin-top:3px}
+
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin:24px 2px 4px;flex-wrap:wrap}
+  .sec-head h2{font-size:23px}
+  .sec-head .mut{font-size:13px}
+  .moves{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:12px}
+  @media(max-width:760px){.moves{grid-template-columns:1fr}}
+  .mcard{display:flex;flex-direction:column;gap:9px;padding:0;overflow:hidden}
+  .illo{width:100%;height:118px;display:block}
+  .mcard .body{padding:0 16px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+  .mcard .tag{align-self:flex-start;margin-top:-8px}
+  .mcard.see .tag{background:var(--mint);color:var(--teal-d)}
+  .mcard.hear .tag{background:var(--peach);color:var(--coral-d)}
+  .mcard.move .tag{background:var(--goldt);color:var(--gold-d)}
+  .mcard h3{font-size:16.5px;line-height:1.14}
+  .mcard .how{font-size:13px;color:var(--ink)}
+  .mcard .why{font-size:12px;color:var(--ink);background:#F7F2ED;border-radius:12px;padding:9px 11px}
+  .mcard .why b{color:var(--coral-d)}
+
+  /* rhythm block inside a move */
+  .beatbox{background:var(--berryt);border-radius:12px;padding:10px 11px;display:flex;flex-direction:column;gap:8px}
+  .beatbox .bhead{display:flex;align-items:center;gap:8px}
+  .beatbox .bt{font-weight:800;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--berry-d)}
+  .beatbox .bpm{margin-left:auto;font-family:"Fraunces",serif;font-weight:700;font-size:15px;color:var(--berry-d)}
+  .beatbox .bpm span{font-family:"Nunito";font-size:10px;font-weight:800;color:var(--berry);opacity:.8}
+  .beatbox .bwhy{font-size:11.5px;color:var(--ink);opacity:.9}
+  .playbeat{border:none;background:var(--berry);color:#fff;border-radius:10px;padding:8px 10px;font-family:"Nunito";font-weight:800;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:.15s}
+  .playbeat:hover{background:var(--berry-d)}
+  .playbeat.on{background:var(--ink)}
+  .playbeat svg{width:13px;height:13px}
+
+  .didbtn{margin-top:auto;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px;font-family:"Nunito";font-weight:800;font-size:13px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:.15s}
+  .didbtn:hover{border-color:var(--teal)}
+  .didbtn .box{width:19px;height:19px;border-radius:6px;border:2px solid var(--muted);display:grid;place-items:center;color:#fff;transition:.15s}
+  .didbtn .box svg{width:12px;height:12px;opacity:0;transform:scale(.5);transition:.15s}
+  .didbtn.done{background:var(--teal);border-color:var(--teal);color:#fff}
+  .didbtn.done .box{background:#fff;border-color:#fff}
+  .didbtn.done .box svg{opacity:1;transform:scale(1);color:var(--teal)}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.05)}100%{transform:scale(1)}}
+  .didbtn.justdone{animation:pop .3s ease}
+
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+  @media(max-width:760px){.duo{grid-template-columns:1fr}}
+  .lane-toggle{display:flex;gap:8px;background:#F1E9E2;border-radius:14px;padding:5px;margin:10px 0 14px}
+  .lane-toggle button{flex:1;border:none;background:transparent;border-radius:10px;padding:11px;font-weight:800;font-size:13px;color:var(--muted);cursor:pointer;font-family:"Nunito";display:flex;flex-direction:column;gap:2px;align-items:center}
+  .lane-toggle button.on{background:#fff;box-shadow:var(--shadow-sm);color:var(--ink)}
+  .lane-toggle small{font-weight:700;font-size:11px;color:var(--muted)}
+  .lanebody .row{display:flex;gap:10px;align-items:flex-start;font-size:13px;margin:9px 0}
+  .lanebody .dot{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;color:#fff;font-size:12px;margin-top:1px}
+  .mocknote{font-size:11px;color:var(--muted);font-weight:700;background:#F7F2ED;border-radius:8px;padding:6px 10px;display:inline-block;margin-top:8px}
+  textarea{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 13px;font-family:"Nunito";font-size:13.5px;resize:vertical;min-height:74px;background:#fff;color:var(--ink)}
+  textarea:focus{outline:none;border-color:var(--coral)}
+  .btn{border:none;border-radius:12px;padding:12px 16px;font-family:"Nunito";font-weight:800;font-size:13.5px;cursor:pointer;transition:.15s}
+  .btn.primary{background:var(--coral);color:#fff;box-shadow:var(--shadow-sm)}
+  .btn.primary:hover{background:var(--coral-d)}
+  .exs{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}
+  .ex{font-size:11.5px;font-weight:700;color:var(--muted);background:#F7F2ED;border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer}
+  .ex:hover{border-color:var(--coral);color:var(--ink)}
+  .ai-out{margin-top:14px;border-radius:16px;border:1px solid var(--line);overflow:hidden;display:none}
+  .ai-out.show{display:block;animation:fade .3s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .ai-head{display:flex;align-items:center;gap:9px;padding:11px 14px;background:var(--ink);color:#fff}
+  .ai-head .rt{margin-left:auto;font-size:11px;font-weight:700;color:#F0A98C}
+  .ai-body{padding:14px 15px;background:#fff}
+  .badge{border-radius:999px;padding:4px 11px;font-size:12px;font-weight:800}
+  .badge.ok{background:var(--mint);color:var(--teal-d)}
+  .badge.watch{background:var(--goldt);color:var(--gold-d)}
+  .badge.pro{background:var(--peach);color:var(--coral-d)}
+  .badge.urgent{background:#F6D9CF;color:#9A2B12}
+  .ai-body p{font-size:13.5px;margin:8px 0}
+  .refer{display:flex;align-items:center;gap:10px;background:#F7F2ED;border-radius:12px;padding:11px 13px;margin-top:10px;font-size:13.5px}
+  .refer .who{font-weight:800}
+  .disc{font-size:11px;color:var(--muted);margin-top:12px;font-style:italic;line-height:1.4}
+
+  /* rhythm science card */
+  .rhythmcard{margin-top:24px;background:linear-gradient(135deg,#2C2430,#1C232B);color:#fff;border-radius:22px;padding:22px;box-shadow:var(--shadow)}
+  .rhythmcard h2{font-size:21px;color:#fff}
+  .rhythmcard .lede{font-size:13.5px;color:#C6CFD5;margin:6px 0 14px;max-width:760px}
+  .rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:760px){.rgrid{grid-template-columns:1fr}}
+  .rbox{background:#332B38;border:1px solid #443A4A;border-radius:14px;padding:13px 14px}
+  .rbox .rt{font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#D9A6C0;margin-bottom:5px}
+  .rbox .rd{font-size:12.5px;color:#D8DEE3}
+  .rcaveat{margin-top:12px;background:#3A3040;border-radius:12px;padding:11px 13px;font-size:12.5px;color:#E4D6E6}
+  .rcaveat b{color:#F0C46B}
+
+  /* TRACKER */
+  .tracker{position:sticky;top:18px;display:flex;flex-direction:column;gap:14px}
+  @media(max-width:980px){.tracker{position:static}}
+  .tk{background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:18px}
+  .tk h3{font-size:18px}
+  .tk .sub{font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px}
+  .today-rings{display:flex;gap:9px;margin:14px 0 4px}
+  .ring{flex:1;border-radius:14px;padding:11px 6px;text-align:center;color:#fff}
+  .ring.see{background:var(--teal)} .ring.hear{background:var(--coral)} .ring.move{background:var(--gold)} .ring.beat{background:var(--berry)}
+  .ring .n{font-family:"Fraunces",serif;font-weight:700;font-size:20px;line-height:1}
+  .ring .l{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.92;margin-top:3px}
+  .bigstat{display:flex;align-items:center;gap:12px;margin-top:6px}
+  .flame{width:46px;height:46px;border-radius:14px;background:var(--peach);display:grid;place-items:center;flex:none}
+  .flame svg{width:24px;height:24px}
+  .bigstat .n{font-family:"Fraunces",serif;font-weight:700;font-size:24px;line-height:1}
+  .bigstat .l{font-size:12px;color:var(--muted);font-weight:700}
+  .analysis{font-size:12.5px}
+  .analysis .lab{display:flex;justify-content:space-between;font-weight:700;margin:12px 0 6px}
+  .bal{display:flex;height:12px;border-radius:999px;overflow:hidden;background:#EEE7E0}
+  .bal span{display:block;height:100%}
+  .balkey{display:flex;gap:12px;font-size:11px;color:var(--muted);font-weight:700;margin-top:7px;flex-wrap:wrap}
+  .balkey i{width:9px;height:9px;border-radius:3px;display:inline-block;margin-right:4px;vertical-align:middle}
+  .nudge{background:#F7F2ED;border-radius:12px;padding:11px 12px;font-size:12.5px;margin-top:13px;display:flex;gap:9px;align-items:flex-start}
+  .nudge b{color:var(--coral-d)}
+  .wk{display:flex;justify-content:space-between;margin-top:12px}
+  .wk .cell{text-align:center;flex:1}
+  .wk .dot7{width:24px;height:24px;border-radius:8px;margin:0 auto 4px;background:#EEE7E0;display:grid;place-items:center;font-size:11px;color:var(--muted);font-weight:800}
+  .wk .dot7.hit{background:var(--teal);color:#fff}
+  .wk .dl{font-size:10px;color:var(--muted);font-weight:700}
+  .beatline{display:flex;align-items:center;gap:8px;background:var(--berryt);border-radius:10px;padding:9px 11px;margin-top:11px;font-size:12px;font-weight:700;color:var(--berry-d)}
+  .resetrow{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .link{background:none;border:none;color:var(--muted);font-family:"Nunito";font-weight:700;font-size:11.5px;cursor:pointer;text-decoration:underline}
+  .savednote{font-size:10.5px;color:var(--muted);font-weight:700}
+
+  /* BEAT BAR */
+  .beatbar{position:fixed;left:50%;transform:translateX(-50%) translateY(120%);bottom:16px;z-index:50;
+    background:var(--ink2);color:#fff;border-radius:16px;padding:11px 14px;display:flex;align-items:center;gap:13px;
+    box-shadow:0 14px 40px rgba(28,35,43,.35);transition:transform .28s cubic-bezier(.2,.8,.3,1);max-width:94vw}
+  .beatbar.show{transform:translateX(-50%) translateY(0)}
+  .pulse{width:34px;height:34px;border-radius:50%;background:var(--berry);flex:none;display:grid;place-items:center;transition:transform .07s ease, background .07s ease}
+  .pulse.hit{transform:scale(1.28);background:#C77FA5}
+  .pulse.hit.acc{background:#F2825C}
+  .pulse svg{width:17px;height:17px}
+  .bb-meta{display:flex;flex-direction:column;min-width:0}
+  .bb-meta .t{font-weight:800;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px}
+  .bb-meta .s{font-size:11px;color:#9FB0AC;font-weight:700}
+  .tempo{display:flex;align-items:center;gap:6px;background:#2B3540;border-radius:10px;padding:5px 7px}
+  .tempo button{width:24px;height:24px;border:none;border-radius:7px;background:#3B4753;color:#fff;font-family:"Nunito";font-weight:800;font-size:14px;cursor:pointer;line-height:1}
+  .tempo button:hover{background:#4A5866}
+  .tempo .v{font-family:"Fraunces",serif;font-weight:700;font-size:15px;min-width:52px;text-align:center}
+  .tempo .v span{font-family:"Nunito";font-size:9.5px;font-weight:800;color:#9FB0AC}
+  .bb-stop{border:none;background:#F2825C;color:#fff;border-radius:10px;padding:9px 13px;font-family:"Nunito";font-weight:800;font-size:12.5px;cursor:pointer}
+  .bb-stop:hover{background:#CF6743}
+
+  footer{margin-top:34px;text-align:center;color:var(--muted);font-size:12px}
+  .kbd{font-family:"Nunito";font-weight:800;background:#fff;border:1px solid var(--line);border-radius:6px;padding:1px 7px;font-size:12px;color:var(--ink)}
+
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-5px) rotate(-3deg)}}
+  @keyframes slide{0%,100%{transform:translateX(-22px)}50%{transform:translateX(22px)}}
+  @keyframes reach{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-30deg)}}
+  @keyframes sway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+  @keyframes rock{0%,100%{transform:translateX(-4px)}50%{transform:translateX(6px)}}
+  @keyframes step{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  @keyframes pulseS{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
+  @keyframes pinch{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(3px) rotate(-6deg)}}
+  @keyframes wavep{0%{opacity:0;transform:scale(.55)}45%{opacity:.9}100%{opacity:0;transform:scale(1.35)}}
+  @keyframes drop{0%,100%{transform:translateY(-6px)}50%{transform:translateY(8px)}}
+  @keyframes floatnote{0%{opacity:0;transform:translateY(6px)}25%{opacity:.95}100%{opacity:0;transform:translateY(-22px)}}
+  .a-bob{animation:bob 2.4s ease-in-out infinite;transform-origin:bottom center}
+  .a-slide{animation:slide 3s ease-in-out infinite}
+  .a-reach{animation:reach 2.4s ease-in-out infinite;transform-origin:top center}
+  .a-sway{animation:sway 3s ease-in-out infinite;transform-origin:bottom center}
+  .a-rock{animation:rock 1.7s ease-in-out infinite}
+  .a-step{animation:step 1.4s ease-in-out infinite}
+  .a-pulse{animation:pulseS 1.9s ease-in-out infinite;transform-origin:center}
+  .a-pinch{animation:pinch 1.9s ease-in-out infinite;transform-origin:top center}
+  .a-drop{animation:drop 2.2s ease-in-out infinite}
+  .wv{animation:wavep 2.1s ease-out infinite;transform-origin:left center}
+  .wv2{animation-delay:.5s} .wv3{animation-delay:1s}
+  .nt{animation:floatnote 2.6s ease-out infinite}
+  .nt2{animation-delay:.85s} .nt3{animation-delay:1.7s}
+  @media (prefers-reduced-motion: reduce){ .illo *{animation:none!important} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.4"/><path d="M6 21c1.5-4 3.6-6 6-6s4.5 2 6 6"/><path d="M12 9v4"/><path d="M8.5 11.5 12 13l3.5-1.5"/></svg>
+    </div>
+    <div><div class="brand">Wiggle Room<small>Sensory–motor companion</small></div></div>
+    <div class="demo-tag">Class prototype · <b>set an age, play the beat</b></div>
+  </header>
+
+  <div class="shell">
+    <main>
+      <section class="agebar">
+        <div class="top">
+          <span class="lab">Your baby is</span>
+          <span class="agebig" id="ageBig">6 <span class="u">weeks</span></span>
+          <span class="stagechip pill" id="stagePill" style="background:var(--peach);color:var(--coral-d)">Newborn</span>
+        </div>
+        <input id="age" type="range" min="0" max="18" step="0.5" value="1.5" aria-label="Baby age in months"/>
+        <div class="ticks"><span>Birth</span><span>3 mo</span><span>6 mo</span><span>9 mo</span><span>12 mo</span><span>15 mo</span><span>18 mo</span></div>
+        <div class="chips" id="quickChips"></div>
+      </section>
+
+      <div class="hero">
+        <div class="card eyecard">
+          <div class="toggle-view" id="viewToggle">
+            <button data-v="see" class="on">Baby's eyes</button>
+            <button data-v="adult">Your eyes</button>
+          </div>
+          <div class="scene-frame">
+            <div class="scene" id="scene">
+              <svg viewBox="0 0 300 300" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+                <rect width="300" height="300" fill="#F3E4D6"/>
+                <rect y="205" width="300" height="95" fill="#E3CDBB"/>
+                <rect x="18" y="30" width="80" height="86" rx="8" fill="#CFE6F0"/>
+                <line x1="58" y1="30" x2="58" y2="116" stroke="#B7D3DE" stroke-width="4"/>
+                <line x1="18" y1="73" x2="98" y2="73" stroke="#B7D3DE" stroke-width="4"/>
+                <line x1="235" y1="0" x2="235" y2="70" stroke="#B49A82" stroke-width="3"/>
+                <circle cx="235" cy="86" r="18" fill="#F2825C"/><circle cx="235" cy="86" r="7" fill="#fff"/>
+                <ellipse cx="150" cy="250" rx="70" ry="46" fill="#6C8CC7"/>
+                <circle cx="150" cy="150" r="52" fill="#F2C9A6"/>
+                <path d="M100 132 q50 -46 100 0 q4 -40 -50 -44 q-54 4 -50 44Z" fill="#3E3A38"/>
+                <circle cx="132" cy="150" r="7" fill="#3E3A38"/><circle cx="168" cy="150" r="7" fill="#3E3A38"/>
+                <circle cx="128" cy="168" r="8" fill="#E79B8E" opacity=".55"/><circle cx="172" cy="168" r="8" fill="#E79B8E" opacity=".55"/>
+                <path d="M132 176 q18 16 36 0" stroke="#C4685C" stroke-width="5" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div class="scene-cap" id="sceneCap">Blurry, high-contrast, ~25 cm</div>
+          </div>
+          <div>
+            <h3 id="seeTitle">What your baby sees now</h3>
+            <div class="see-note mut" id="seeNote"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="eyebrow" style="margin:2px 2px 10px">Right now, your baby…</div>
+          <div class="senses" id="senses"></div>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <h2>Today's three moves</h2>
+        <span class="mut">— a picture of what to do, its <b>why</b>, and a <b>beat</b> where rhythm helps. Tap <b>Mark done</b> when you play.</span>
+      </div>
+      <div class="moves" id="moves"></div>
+
+      <!-- RHYTHM SCIENCE -->
+      <section class="rhythmcard">
+        <div class="eyebrow" style="color:#D9A6C0">The auditory layer</div>
+        <h2>Why there's a beat on some of these</h2>
+        <div class="lede">Rhythmic Auditory Stimulation is one of the best-evidenced tools in motor rehabilitation. Wiggle Room borrows it for the very start of the lifespan — carefully, and for three specific reasons.</div>
+        <div class="rgrid">
+          <div class="rbox"><div class="rt">1 · Primes</div><div class="rd">A steady pulse puts the motor system in a state of readiness to move. This is the mechanism behind rhythmic gait training in stroke, Parkinson's and cerebral palsy.</div></div>
+          <div class="rbox"><div class="rt">2 · Pulls</div><div class="rd">Infants from ~5 months move rhythmically more to music than to speech — and it's the <b>beat</b>, not the melody, that drives it. Better-matched movement came with more smiling.</div></div>
+          <div class="rbox"><div class="rt">3 · Paces you</div><div class="rd">The adult can lock to a beat, so the metronome times <b>your</b> bouncing, rocking and stepping — making your handling predictable and repeatable.</div></div>
+        </div>
+        <div class="rcaveat"><b>What this is not:</b> we are not drilling babies to keep time. Infant movement is periodic but not beat-locked, and true synchronisation matures around age 10. The beat is a primer, a motivator and a scaffold for the caregiver — never a test the baby can fail.</div>
+      </section>
+
+      <div class="duo">
+        <div class="card">
+          <div class="eyebrow">How you check in</div>
+          <h2 style="font-size:21px;margin:6px 0 2px">Your privacy, your choice</h2>
+          <div class="lane-toggle" id="laneToggle">
+            <button data-l="tell" class="on">Tell<small>describe in words</small></button>
+            <button data-l="show">Show<small>opt-in video</small></button>
+          </div>
+          <div class="lanebody" id="laneBody"></div>
+        </div>
+
+        <div class="card">
+          <div class="eyebrow">Ask Wiggle</div>
+          <h2 style="font-size:21px;margin:6px 0 2px">Not sure if it's worth a check?</h2>
+          <p class="mut" style="font-size:13px;margin:4px 0 10px">Describe what you're seeing. Wiggle reads it against your baby's stage and points you to the right first step — never a diagnosis.</p>
+          <textarea id="concern" placeholder="e.g. She's 5 months and always rolls to the left, never the right…"></textarea>
+          <div class="exs" id="exs"></div>
+          <button class="btn primary" id="askBtn">Ask Wiggle →</button>
+          <div class="ai-out" id="aiOut">
+            <div class="ai-head">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 8V4M9 2h6M9 14h.01M15 14h.01"/></svg>
+              <b style="font-size:13px">Wiggle</b><span class="rt" id="aiAge"></span>
+            </div>
+            <div class="ai-body" id="aiBody"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <aside class="tracker">
+      <div class="tk">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <h3>Your log</h3><span class="sub" id="todayDate"></span>
+        </div>
+        <div class="sub">Tap a move to check it off. It's just for you.</div>
+        <div class="today-rings">
+          <div class="ring see"><div class="n" id="rSee">0</div><div class="l">See</div></div>
+          <div class="ring hear"><div class="n" id="rHear">0</div><div class="l">Hear</div></div>
+          <div class="ring move"><div class="n" id="rMove">0</div><div class="l">Move</div></div>
+          <div class="ring beat"><div class="n" id="rBeat">0</div><div class="l">Beat</div></div>
+        </div>
+        <div class="nudge" id="nudge"></div>
+      </div>
+
+      <div class="tk">
+        <h3 style="font-size:16px;margin-bottom:2px">This week</h3>
+        <div class="bigstat">
+          <div class="flame">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#CF6743" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c1 3 4 4 4 8a4 4 0 0 1-8 0c0-1 .5-2 1-2.5C9 10 9 8 12 3Z"/><path d="M12 21a6 6 0 0 0 6-6c0-2-1-3.5-2-5"/></svg>
+          </div>
+          <div><div class="n" id="streakN">0</div><div class="l">day streak</div></div>
+          <div style="margin-left:auto;text-align:right"><div class="n" id="weekN">0</div><div class="l">moves this week</div></div>
+        </div>
+
+        <div class="wk" id="week7"></div>
+
+        <div class="analysis">
+          <div class="lab"><span>Sense balance</span><span class="mut" id="balTop"></span></div>
+          <div class="bal" id="bal"></div>
+          <div class="balkey"><span><i style="background:var(--teal)"></i>See</span><span><i style="background:var(--coral)"></i>Hear</span><span><i style="background:var(--gold)"></i>Move</span></div>
+        </div>
+        <div class="beatline" id="beatLine"></div>
+        <div class="resetrow">
+          <span class="savednote" id="savedNote">Saved on this device</span>
+          <button class="link" id="resetBtn">Reset log</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    Prototype for <b>Motor Learning in the Age of AI</b> · not medical advice · sources: AAO/AOA, ASHA/AAP, Adolph, Sylos-Labini, Thaut, Zentner &amp; Eerola, Phillips-Silver &amp; Trainor.<br>
+    Tip: <span class="kbd">←</span> <span class="kbd">→</span> nudge the age · <span class="kbd">space</span> stops the beat.
+  </footer>
+</div>
+
+<!-- BEAT BAR -->
+<div class="beatbar" id="beatBar">
+  <div class="pulse" id="pulse"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+  <div class="bb-meta"><div class="t" id="bbTitle">Beat</div><div class="s" id="bbSub">rhythm cue</div></div>
+  <div class="tempo">
+    <button id="bpmDown" aria-label="Slower">−</button>
+    <div class="v"><span id="bpmVal">90</span><br><span>BPM</span></div>
+    <button id="bpmUp" aria-label="Faster">+</button>
+  </div>
+  <button class="bb-stop" id="bbStop">Stop</button>
+</div>
+
+<script>
+/* ---------- ICONS ---------- */
+const I = {
+  eye:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  ear:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5a4 4 0 0 1 4 4c0 3-3 3-3 6"/><path d="M6 9a6 6 0 0 1 12 0c0 5-4 6-4 9a3 3 0 0 1-6 0"/></svg>',
+  move:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 4a1.6 1.6 0 1 0 0-.01"/><path d="M5 20l3-6 3 2 2-3 4 3"/><path d="M8 14l1-4 4 1 3-3"/></svg>',
+  note:'<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  play:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M7 4l13 8-13 8z"/></svg>',
+  stop:'<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l6 6L20 6"/></svg>'
+};
+
+/* ---------- ILLUSTRATIONS ---------- */
+const sB='#F4CBA6', sP='#E7B489', hr='#43403D', ck='#E89B8E';
+function bgr(tint){return `<rect width="220" height="118" fill="${tint}"/>`;}
+function babyHead(x,y,r,cls){
+  return `<g class="${cls||''}">
+    <circle cx="${x}" cy="${y}" r="${r}" fill="${sB}"/>
+    <path d="M${x-2} ${y-r} q3 -5 6 -1" stroke="${hr}" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <circle cx="${x-r*0.34}" cy="${y}" r="1.7" fill="${hr}"/><circle cx="${x+r*0.34}" cy="${y}" r="1.7" fill="${hr}"/>
+    <circle cx="${x-r*0.58}" cy="${y+r*0.36}" r="2.3" fill="${ck}" opacity=".6"/><circle cx="${x+r*0.58}" cy="${y+r*0.36}" r="2.3" fill="${ck}" opacity=".6"/>
+  </g>`;
+}
+function note(x,y,cls){
+  return `<g class="nt ${cls}" transform="translate(${x},${y})">
+    <path d="M7 15 V3" stroke="#9B5A7A" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <ellipse cx="4.4" cy="15.2" rx="3.6" ry="2.7" fill="#9B5A7A"/>
+    <path d="M7 3 q5.4 1.6 6 5" stroke="#9B5A7A" stroke-width="2" fill="none" stroke-linecap="round"/>
+  </g>`;
+}
+const NOTES = note(182,60,'')+note(196,44,'nt2')+note(206,66,'nt3');
+
+const ILLO = {
+  tummy:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <ellipse cx="110" cy="96" rx="96" ry="16" fill="#00000010"/>
+    <rect x="28" y="88" width="150" height="16" rx="8" fill="#EAD9CC"/>
+    <circle cx="46" cy="52" r="20" fill="${sP}"/><path d="M27 44 q19 -22 38 0 q3 -20 -19 -22 q-22 2 -19 22Z" fill="${hr}"/>
+    <circle cx="52" cy="52" r="2" fill="${hr}"/><path d="M48 60 q6 5 12 1" stroke="#C4685C" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    <ellipse cx="140" cy="90" rx="34" ry="12" fill="#3E8E82"/>
+    <g class="anim a-bob" style="transform-origin:120px 84px">${babyHead(120,74,13)}</g>
+    <path d="M126 88 q10 -2 14 4" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  track:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <rect x="20" y="86" width="180" height="16" rx="8" fill="#EAD9CC"/>
+    <ellipse cx="96" cy="84" rx="40" ry="13" fill="#F2825C"/>
+    ${babyHead(58,74,14)}
+    <g class="anim a-slide">
+      <line x1="150" y1="8" x2="150" y2="34" stroke="#B49A82" stroke-width="2.5"/>
+      <rect x="140" y="34" width="20" height="20" rx="4" fill="#26303B"/><rect x="145" y="39" width="10" height="10" fill="#fff"/>
+    </g>
+  </svg>`,
+  reach:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <rect x="20" y="90" width="180" height="14" rx="7" fill="#EAD9CC"/>
+    <ellipse cx="120" cy="88" rx="42" ry="13" fill="#D99A2B"/>
+    ${babyHead(80,78,14)}
+    <line x1="150" y1="0" x2="150" y2="30" stroke="#B49A82" stroke-width="2.5"/>
+    <circle cx="150" cy="42" r="13" fill="#F2825C"/><circle cx="150" cy="42" r="5" fill="#fff"/>
+    <g class="anim a-reach" style="transform-origin:120px 82px"><rect x="116" y="52" width="8" height="34" rx="4" fill="${sB}"/><circle cx="120" cy="52" r="6" fill="${sB}"/></g>
+  </svg>`,
+  sit:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <ellipse cx="110" cy="100" rx="90" ry="12" fill="#00000010"/>
+    <circle cx="46" cy="66" r="9" fill="#3E8E82"/><circle cx="176" cy="60" r="9" fill="#F2825C"/><circle cx="150" cy="92" r="9" fill="#9B5A7A"/>
+    <g class="anim a-sway" style="transform-origin:110px 100px">
+      <ellipse cx="110" cy="86" rx="26" ry="20" fill="#D99A2B"/>
+      ${babyHead(110,54,15)}
+      <path d="M86 84 q-8 0 -12 6" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M134 84 q8 0 12 6" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>`,
+  bounce:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <ellipse cx="110" cy="108" rx="92" ry="10" fill="#00000010"/>
+    <path d="M40 108 V78 q0 -12 12 -12 h44 q12 0 12 12 v30" fill="#6C8CC7"/>
+    <circle cx="66" cy="44" r="17" fill="${sP}"/><path d="M50 38 q16 -19 32 0 q3 -17 -16 -19 q-19 2 -16 19Z" fill="${hr}"/>
+    <circle cx="71" cy="44" r="1.9" fill="${hr}"/><path d="M67 51 q5 4 10 1" stroke="#C4685C" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <g class="anim a-step" style="animation-duration:.9s">
+      ${babyHead(128,52,15)}
+      <ellipse cx="128" cy="80" rx="20" ry="16" fill="#9B5A7A"/>
+      <rect x="118" y="92" width="8" height="14" rx="4" fill="${sB}"/><rect x="130" y="92" width="8" height="14" rx="4" fill="${sB}"/>
+      <path d="M110 76 q-10 -2 -14 4" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>`,
+  crawl:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <rect x="16" y="92" width="188" height="12" rx="6" fill="#EAD9CC"/>
+    <g class="anim a-pulse" style="transform-origin:180px 78px"><circle cx="180" cy="78" r="13" fill="#F2825C"/><circle cx="180" cy="78" r="5" fill="#fff"/></g>
+    <g class="anim a-rock">
+      <ellipse cx="96" cy="74" rx="30" ry="14" fill="#3E8E82"/>
+      ${babyHead(128,66,13)}
+      <rect x="74" y="80" width="7" height="14" rx="3.5" fill="${sB}"/><rect x="108" y="80" width="7" height="14" rx="3.5" fill="${sB}"/>
+      <rect x="88" y="82" width="7" height="12" rx="3.5" fill="${sB}"/>
+    </g>
+  </svg>`,
+  walk:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <rect x="16" y="98" width="188" height="10" rx="5" fill="#EAD9CC"/>
+    <rect x="150" y="60" width="54" height="12" rx="6" fill="#C99E7E"/>
+    <rect x="188" y="60" width="10" height="40" rx="4" fill="#C99E7E"/>
+    <g class="anim a-step">
+      ${babyHead(96,44,15)}
+      <rect x="82" y="58" width="28" height="30" rx="12" fill="#F2825C"/>
+      <rect x="150" y="66" width="16" height="7" rx="3.5" fill="${sB}"/>
+      <rect x="86" y="86" width="8" height="14" rx="4" fill="${sB}"/><rect x="98" y="86" width="8" height="14" rx="4" fill="${sB}"/>
+    </g>
+  </svg>`,
+  hands:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <path d="M150 74 q30 26 62 0 v34 h-62 Z" fill="#D9B79A"/>
+    <ellipse cx="181" cy="74" rx="31" ry="10" fill="#E7C6AC"/>
+    <g class="anim a-drop"><circle cx="120" cy="40" r="9" fill="#3E8E82"/></g>
+    <circle cx="150" cy="96" r="7" fill="#9B5A7A"/><circle cx="172" cy="98" r="7" fill="#F2825C"/>
+    <g class="anim a-pinch" style="transform-origin:70px 40px">
+      <rect x="52" y="40" width="34" height="16" rx="8" fill="${sB}"/>
+      <rect x="80" y="34" width="10" height="16" rx="5" fill="${sB}"/>
+      <rect x="80" y="50" width="14" height="8" rx="4" fill="${sB}"/>
+    </g>
+  </svg>`,
+  talk:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <circle cx="48" cy="60" r="22" fill="${sP}"/><path d="M27 50 q21 -24 42 0 q3 -22 -21 -24 q-24 2 -21 24Z" fill="${hr}"/>
+    <circle cx="55" cy="60" r="2.2" fill="${hr}"/><path d="M50 70 q7 6 14 1" stroke="#C4685C" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    ${babyHead(176,62,18)}
+    <g fill="none" stroke="#F2825C" stroke-width="3" stroke-linecap="round">
+      <path class="wv" d="M92 46 q10 14 0 28"/>
+      <path class="wv wv2" d="M108 40 q15 20 0 40"/>
+      <path class="wv wv3" d="M124 34 q20 26 0 52"/>
+    </g>
+  </svg>`,
+  colour:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    ${babyHead(64,60,18)}
+    <g class="anim a-pulse" style="transform-origin:160px 60px">
+      <circle cx="160" cy="60" r="24" fill="#F2825C"/>
+      <path d="M160 36 A24 24 0 0 1 184 60 Z" fill="#D99A2B"/>
+      <path d="M160 84 A24 24 0 0 1 136 60 Z" fill="#3E8E82"/>
+      <circle cx="160" cy="60" r="7" fill="#fff"/>
+    </g>
+    <g fill="none" stroke="#26303B" stroke-width="2" opacity=".4"><path d="M86 54 q20 -8 44 0" stroke-dasharray="3 4"/></g>
+  </svg>`,
+  dance:(t)=>`<svg class="illo" viewBox="0 0 220 118" preserveAspectRatio="xMidYMid slice">${bgr(t)}
+    <ellipse cx="110" cy="106" rx="92" ry="10" fill="#00000010"/>
+    <circle cx="52" cy="52" r="19" fill="${sP}"/><path d="M34 45 q18 -21 36 0 q3 -19 -18 -21 q-21 2 -18 21Z" fill="${hr}"/>
+    <circle cx="57" cy="52" r="2" fill="${hr}"/><path d="M53 60 q6 5 11 1" stroke="#C4685C" stroke-width="2.3" fill="none" stroke-linecap="round"/>
+    <rect x="38" y="72" width="30" height="32" rx="12" fill="#3E8E82"/>
+    <g class="anim a-sway" style="transform-origin:132px 104px;animation-duration:1.1s">
+      ${babyHead(132,50,15)}
+      <rect x="118" y="64" width="28" height="28" rx="12" fill="#D99A2B"/>
+      <rect x="122" y="90" width="8" height="14" rx="4" fill="${sB}"/><rect x="134" y="90" width="8" height="14" rx="4" fill="${sB}"/>
+      <path d="M116 70 q-11 -4 -14 4" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+      <path d="M148 70 q11 -4 14 4" stroke="${sB}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    </g>
+  </svg>`
+};
+function illoFor(name, tint, hasBeat){
+  const svg = ILLO[name](tint);
+  return hasBeat ? svg.replace('</svg>', NOTES + '</svg>') : svg;
+}
+
+/* ---------- STAGE DATA ----------
+   move = [category, tag, title, illo, how, why, beat|null]
+   beat = {bpm, label, why}
+*/
+const STAGES = [
+  { max:2, name:"Newborn", color:"peach,coral-d",
+    sim:{blur:6, sat:.15, con:1.55, bri:1.06, cap:"Blurry, high-contrast, ~25 cm"},
+    seeNote:"A world of light and dark about a forearm away. Bold black-and-white shapes and your face are the only things clearly in focus — pastel toys are basically invisible.",
+    see:["High-contrast only","Locks onto bold edges & faces at ~20–30 cm"],
+    hear:["Prefers your voice","Startles at loud sounds; high-pitched ‘parentese’ cuts through best"],
+    move:["Kicks & squirms","Lifts head briefly in tummy time; lots of spontaneous, variable movement"],
+    beat:["Slow & soothing","A womb-paced pulse (~60 BPM) organises your rocking and keeps arousal low"],
+    moves:[
+      ["move","Tummy Time","Chest ‘hello’","tummy","Lie back, baby tummy-down on your chest. Talk so they lift their head toward your face.","Builds the neck & back extensors — and your face is a target they can actually see.",
+        {bpm:60,label:"Slow sway",why:"Sway or pat on each beat. A slow, predictable pulse paces <b>your</b> handling and keeps arousal low."}],
+      ["see","Vision","High-contrast peek","track","Hold a bold black-&-white card ~25 cm away. Pause, let them lock on, drift it slowly.","Matches newborn acuity; early tracking is the first <b>visual–motor</b> coupling.",null],
+      ["hear","Hearing","Sing up close","talk","Face-to-face, talk and sing in a sing-song voice. Pause — leave room for their ‘reply’.","Familiar high voices are heard best; turn-taking seeds communication.",
+        {bpm:66,label:"Lullaby pulse",why:"Sung rhythm is the earliest auditory–motor scaffold. Even newborns move more to a beat than to speech."}]
+    ]},
+  { max:4, name:"2–4 months", color:"peach,coral-d",
+    sim:{blur:3.6, sat:.4, con:1.28, bri:1.03, cap:"Tracking; colours starting to bloom"},
+    seeNote:"Focus is sharpening and the eyes now work as a team. Your baby follows slow-moving things and is starting to catch the first colours — especially red.",
+    see:["Tracks & follows","Smoothly follows a slow target and crosses the midline"],
+    hear:["Coos back","Turns toward sound; babbles and experiments with noises"],
+    move:["Pushes up","Props on forearms in tummy time; swipes at things; hands find the middle"],
+    beat:["Predictable timing","A steady pulse makes sounds anticipatable — the first step toward auditory–motor coupling"],
+    moves:[
+      ["move","Tummy Time","Forearm push-up play","tummy","Tummy time with a rolled towel under the chest and a toy at eye height.","Builds the push-up primitive — the foundation the reach is later assembled from.",
+        {bpm:76,label:"Encouraging pulse",why:"A light beat during effort <b>primes the motor system to readiness</b> — the core RAS mechanism."}],
+      ["see","Vision","Track across the middle","track","Move a bold toy slowly side to side, crossing their body's midline — one pass per beat.","Crossing midline links the two halves of the body and brain.",
+        {bpm:50,label:"One pass per beat",why:"Predictable timing lets them <b>anticipate</b> where the toy goes next, not just react to it."}],
+      ["hear","Hearing","Rattle from the side","talk","Shake a soft rattle to one side on the beat and wait for a head-turn toward it.","Emerging sound localisation, coupled to new head control.",
+        {bpm:88,label:"Shake on the beat",why:"A regular pulse makes the sound predictable, so the head-turn can be planned rather than startled."}]
+    ]},
+  { max:5, name:"4–5 months", color:"goldt,gold-d",
+    sim:{blur:2.4, sat:.72, con:1.12, bri:1.02, cap:"Depth is arriving; colours richer"},
+    seeNote:"Reaching is coming online and depth perception is switching on as both eyes team up. Colour vision is filling in — bold primaries pop.",
+    see:["Sees depth & colour","Judges distance well enough to bat and grab; loves bold reds"],
+    hear:["Purposeful turns","Deliberately seeks out where a sound came from (~5 mo)"],
+    move:["Reaches & rolls","Reaches and grabs; starts rolling; brings feet to mouth"],
+    beat:["Moves more to music","From ~5 months, babies move rhythmically more to a beat than to speech"],
+    moves:[
+      ["move","Motor","Reach invitation","reach","Dangle a light toy just within arm's reach and offer it on the downbeat.","Reaching emerges ~4 mo; each variable swipe tunes the movement.",
+        {bpm:84,label:"Offer on the downbeat",why:"A rhythmic cue primes the reach and gives a predictable moment to aim for."}],
+      ["move","Motor","Roll runway","reach","Lure a toy to one side to invite a roll. Celebrate any half-roll.","Rolling is assembled from many varied attempts — reward the exploring, not the perfect roll.",
+        {bpm:72,label:"Count-in cue",why:"A soft count-in marks the start of an attempt, so effort and timing get paired."}],
+      ["see","Vision","Red & bold play","colour","Introduce a strong red or primary-colour toy into play.","Colour vision is coming online — red first — so it finally earns attention.",null]
+    ]},
+  { max:6, name:"6 months", color:"goldt,gold-d",
+    sim:{blur:1.5, sat:.95, con:1.05, bri:1.0, cap:"Near-adult colour vision"},
+    seeNote:"Colour vision is close to adult, and faces are fascinating. This is when the first eye check is recommended (AAO).",
+    see:["Full colour","Near-adult colour vision; spots and reaches for what they want"],
+    hear:["Babbles in strings","Loves call-and-response; reacts to voices and toys"],
+    move:["Sits & transfers","Sits with (then without) support; passes toys hand to hand"],
+    beat:["Bouncing shapes hearing","At 6 months, how you bounce a baby changes how they later hear a rhythm"],
+    moves:[
+      ["move","Motor","Supported sit + reach","sit","Sit them with support and place toys in an arc so they reach in every direction.","Trunk control plus reaching in varied directions widens the movement library.",
+        {bpm:96,label:"Steady play pulse",why:"A background pulse sustains effort and marks each reach as its own attempt."}],
+      ["hear","Rhythm","Bounce to the beat","bounce","Hold them supported on your lap and bounce gently on every second beat.","Vestibular input and hearing are learned together — this is the headline rhythm activity of 6 months.",
+        {bpm:100,label:"Bounce every 2nd beat",why:"Bouncing a 6-month-old on a beat literally changes how they recognise that rhythm afterwards (Phillips-Silver &amp; Trainor, <i>Science</i> 2005)."}],
+      ["hear","Hearing","Call-and-response","talk","Copy their sounds back on the beat, then add one new one.","Contingent feedback accelerates vocal learning.",
+        {bpm:92,label:"Take turns on the beat",why:"A shared pulse turns babble into structured turn-taking — early interpersonal synchrony."}]
+    ]},
+  { max:9, name:"7–9 months", color:"mint,teal-d",
+    sim:{blur:1, sat:1, con:1.02, bri:1.0, cap:"Sharp — spots tiny objects"},
+    seeNote:"Vision is sharp enough to spot a crumb across the room and reach for it accurately. Depth and spatial sense support new crawling adventures.",
+    see:["Spots tiny things","Sees small objects and reaches for them accurately"],
+    hear:["Responds to name","Understands ‘no’ and ‘bye-bye’; strings syllables"],
+    move:["Crawls & explores","Tries many crawl styles; transfers objects; may pull to stand"],
+    beat:["Rhythm energises locomotion","A pulse during crawling is the infant echo of rhythmic gait training"],
+    moves:[
+      ["move","Motor","Crawl toward","crawl","Put a favourite toy just out of reach and keep a steady beat going. Let them solve the route — any style counts.","Babies try many crawl variants before selecting one: variability first, efficiency later.",
+        {bpm:108,label:"Crawl groove",why:"Rhythmic cueing is used exactly this way in gait rehab — the pulse primes and energises locomotion."}],
+      ["move","Fine motor","Drum, in & out","hands","Give a basket and safe objects to take out, drop back in — and bang on the beat.","Builds grasp-and-release and cause-and-effect as the pincer grip forms.",
+        {bpm:92,label:"Bang on the beat",why:"Self-made sound closes an auditory–motor loop: their action creates the rhythm they hear."}],
+      ["hear","Hearing","Name game","talk","Use their name plus simple words (‘up’, ‘bye-bye’) on the downbeat, inside routines.","Responding to name and first-word comprehension are emerging.",
+        {bpm:84,label:"Name on the downbeat",why:"Placing the key word on a predictable beat makes it easier to segment and catch."}]
+    ]},
+  { max:12, name:"10–12 months", color:"mint,teal-d",
+    sim:{blur:.5, sat:1, con:1, bri:1, cap:"Adult-like; judges distance"},
+    seeNote:"Vision is essentially adult-like: object permanence is solid and your baby judges distance well enough to place a tiny piece precisely.",
+    see:["Judges distance","Object permanence solid; tracks and reaches with precision"],
+    hear:["First words","Speech-like ‘dadada’; first real words around 12 months"],
+    move:["Cruises & pincers","Pulls up, cruises furniture; picks up tiny things finger-and-thumb"],
+    beat:["A pulse to step to","Marching tempo supports the transition from cruising to walking"],
+    moves:[
+      ["move","Motor","Cruise the furniture","walk","Space safe hand-holds a step apart along a sofa and keep a marching pulse going.","Cruising bridges standing to walking; varied surfaces build adaptable balance.",
+        {bpm:100,label:"March pulse",why:"Match the beat to their own step rate first, then nudge it ~5% faster — the standard RAS protocol."}],
+      ["move","Fine motor","Pincer treasure","hands","Offer safe small pieces (supervised) to pick up with finger and thumb.","The pincer grasp is the fine-motor headline of this stage.",null],
+      ["hear","Hearing","Point, name & chant","colour","Point at pictures and name them in a simple repeating chant.","Joint attention and object permanence link vision, language and gesture.",
+        {bpm:76,label:"Chant pulse",why:"Rhythmic, repeated naming is easier to parse and predict than flat speech."}]
+    ]},
+  { max:18, name:"13–18 months", color:"mint,teal-d",
+    sim:{blur:0, sat:1, con:1, bri:1, cap:"Full, sharp vision"},
+    seeNote:"A full, sharp view of the world. Now the work is whole-body: thousands of steps a day across every kind of surface.",
+    see:["Full vision","Sharp, full-colour, adult-like distance judgement"],
+    hear:["Follows words","Follows simple one-step cues; growing spoken vocabulary"],
+    move:["Walks & climbs","Walks — thousands of steps and hundreds of falls a day; climbs and carries"],
+    beat:["Tempo as a challenge","Changing the tempo forces the walk to adapt — variability you can dial"],
+    moves:[
+      ["move","Motor","Varied-surface walking","walk","Let them walk across grass, cushions and gentle ramps with a walking pulse playing.","Changing surfaces prevents fixed patterns and builds flexible balance (Adolph).",
+        {bpm:120,label:"Walking pulse",why:"Match their natural step rate, then nudge ~5% faster — how RAS lengthens stride and steadies gait."}],
+      ["move","Rhythm","Fast–slow dance","dance","Play a beat, dance together, then switch it fast ↔ slow and let them adjust.","Switching tempo makes the whole pattern re-organise instead of settling into one fixed rhythm.",
+        {bpm:130,label:"Switch it up",why:"Faster tempi evoke faster movement in infants — so tempo is a dial for practice variability."}],
+      ["move","Motor","Climb-safe zone","crawl","Set up cushions and low steps to climb, supervised.","Climbing is rich, variable, whole-body problem-solving.",null]
+    ]}
+];
+const TINT={see:'#E7F0EC', hear:'#FBEAE0', move:'#F7ECD3'};
+function stageFor(m){ for(const s of STAGES){ if(m<=s.max) return s;} return STAGES[STAGES.length-1]; }
+function ageLabel(m){
+  if(m<0.05) return ['Just born',''];
+  if(m<3){ const w=Math.max(1,Math.round(m*4.345)); return [w, w===1?'week':'weeks']; }
+  const whole=Math.floor(m); const half=(m-whole)>=.5;
+  return [half? whole+'½' : whole, (whole===1&&!half)?'month':'months'];
+}
+
+/* ---------- METRONOME (Web Audio) ---------- */
+let actx=null, schedTimer=null, nextNote=0, beatIdx=0;
+let curBPM=90, playingTitle=null, beatsPerBar=4;
+const beatPlayed=new Set();
+function ctx(){
+  if(!actx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; actx=new AC(); }
+  if(actx.state==='suspended') actx.resume();
+  return actx;
+}
+function clickAt(time, accent){
+  const c=ctx(); if(!c) return;
+  const o=c.createOscillator(), o2=c.createOscillator(), g=c.createGain();
+  o.type='sine';  o.frequency.setValueAtTime(accent?784:523.25, time);
+  o2.type='sine'; o2.frequency.setValueAtTime(accent?1568:1046.5, time);
+  const peak=accent?0.30:0.17;
+  g.gain.setValueAtTime(0.0001, time);
+  g.gain.exponentialRampToValueAtTime(peak, time+0.006);
+  g.gain.exponentialRampToValueAtTime(0.0001, time+(accent?0.26:0.19));
+  const g2=c.createGain(); g2.gain.setValueAtTime(0.35,time);
+  o.connect(g); o2.connect(g2); g2.connect(g); g.connect(c.destination);
+  o.start(time); o2.start(time); o.stop(time+0.3); o2.stop(time+0.3);
+  const delay=Math.max(0,(time-c.currentTime)*1000);
+  setTimeout(()=>flashPulse(accent), delay);
+}
+function flashPulse(accent){
+  const p=document.getElementById('pulse');
+  p.classList.add('hit'); if(accent) p.classList.add('acc');
+  setTimeout(()=>{p.classList.remove('hit');p.classList.remove('acc');},95);
+}
+function scheduler(){
+  const c=ctx(); if(!c) return;
+  while(nextNote < c.currentTime + 0.12){
+    clickAt(nextNote, beatIdx % beatsPerBar === 0);
+    nextNote += 60.0/curBPM;
+    beatIdx++;
+  }
+}
+function startBeat(title, bpm, sub){
+  const c=ctx();
+  if(!c){ alert('Audio is not available in this browser view. Open the file directly in Chrome, Safari or Firefox to hear the beat.'); return; }
+  curBPM=bpm; playingTitle=title; beatIdx=0; nextNote=c.currentTime+0.06;
+  clearInterval(schedTimer); schedTimer=setInterval(scheduler,25);
+  beatPlayed.add(title);
+  document.getElementById('bbTitle').textContent=title;
+  document.getElementById('bbSub').textContent=sub||'rhythm cue';
+  document.getElementById('bpmVal').textContent=bpm;
+  document.getElementById('beatBar').classList.add('show');
+  refreshPlayButtons();
+  renderTracker();
+}
+function stopBeat(){
+  clearInterval(schedTimer); schedTimer=null; playingTitle=null;
+  document.getElementById('beatBar').classList.remove('show');
+  refreshPlayButtons();
+}
+function setBPM(v){
+  curBPM=Math.min(200,Math.max(40,v));
+  document.getElementById('bpmVal').textContent=curBPM;
+}
+function refreshPlayButtons(){
+  document.querySelectorAll('.playbeat').forEach(b=>{
+    const on = b.dataset.title===playingTitle && schedTimer;
+    b.classList.toggle('on', !!on);
+    b.querySelector('.plbl').textContent = on ? 'Stop beat' : 'Play beat';
+    b.querySelector('.pico').innerHTML = on ? I.stop : I.play;
+  });
+}
+
+/* ---------- STORE ---------- */
+const KEY='wiggleroom.log.v2';
+let LOG=[]; let canSave=true;
+try{ const r=localStorage.getItem(KEY); LOG=r?JSON.parse(r):[]; }catch(e){ canSave=false; }
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(LOG)); }catch(e){ canSave=false; } }
+function dayKey(off){ const d=new Date(); d.setDate(d.getDate()-(off||0));
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function todayKey(){ return dayKey(0); }
+function isDone(title){ const t=todayKey(); return LOG.some(e=>e.d===t && e.t===title); }
+function toggleDone(title,cat,stage,hasBeat){
+  const t=todayKey(); const i=LOG.findIndex(e=>e.d===t && e.t===title);
+  if(i>=0) LOG.splice(i,1);
+  else LOG.push({d:t,t:title,c:cat,s:stage,b: !!(hasBeat && beatPlayed.has(title))});
+  save();
+}
+
+/* ---------- RENDER ---------- */
+const $=s=>document.querySelector(s);
+let viewMode='see';
+
+function render(){
+  const m=parseFloat($('#age').value);
+  const st=stageFor(m);
+  const [n,u]=ageLabel(m);
+  $('#ageBig').innerHTML = n+(u?' <span class="u">'+u+'</span>':'');
+  const [bgc,fg]=st.color.split(',');
+  const pill=$('#stagePill'); pill.textContent=st.name;
+  pill.style.background='var(--'+bgc+')'; pill.style.color='var(--'+fg+')';
+
+  const sc=$('#scene'), sim=st.sim;
+  if(viewMode==='see'){
+    sc.style.filter='blur('+sim.blur+'px) saturate('+sim.sat+') contrast('+sim.con+') brightness('+sim.bri+')';
+    sc.style.transform = m<2 ? 'scale(1.35)' : (m<4?'scale(1.15)':'scale(1)');
+    $('#sceneCap').textContent=sim.cap;
+  } else { sc.style.filter='none'; sc.style.transform='scale(1)'; $('#sceneCap').textContent='How the room really looks'; }
+  $('#seeNote').textContent=st.seeNote;
+
+  const senses=[['see','See',I.eye,st.see],['hear','Hear',I.ear,st.hear],['move','Move',I.move,st.move],['beat','Beat',I.note,st.beat]];
+  $('#senses').innerHTML=senses.map(([c,k,ic,arr])=>
+    '<div class="sense '+c+'"><div class="ic">'+ic+'</div>'+
+    '<div><div class="k">'+k+'</div><div class="v">'+arr[0]+'</div><div class="d">'+arr[1]+'</div></div></div>').join('');
+
+  $('#moves').innerHTML=st.moves.map(mv=>{
+    const cat=mv[0], tag=mv[1], title=mv[2], illo=mv[3], how=mv[4], why=mv[5], beat=mv[6];
+    const done=isDone(title);
+    let beatHTML='';
+    if(beat){
+      beatHTML='<div class="beatbox">'+
+        '<div class="bhead"><span class="bt">♪ Rhythm</span><span class="bpm">'+beat.bpm+' <span>BPM</span></span></div>'+
+        '<div class="bwhy"><b>'+beat.label+'.</b> '+beat.why+'</div>'+
+        '<button class="playbeat" data-title="'+title+'" data-bpm="'+beat.bpm+'" data-sub="'+beat.label+'">'+
+        '<span class="pico">'+I.play+'</span><span class="plbl">Play beat</span></button></div>';
+    }
+    return '<div class="card mcard '+cat+'">'+
+      illoFor(illo, TINT[cat], !!beat)+
+      '<div class="body">'+
+        '<span class="tag pill">'+tag+'</span>'+
+        '<h3>'+title+'</h3>'+
+        '<div class="how">'+how+'</div>'+
+        '<div class="why"><b>Why:</b> '+why+'</div>'+
+        beatHTML+
+        '<button class="didbtn '+(done?'done':'')+'" data-title="'+title+'" data-cat="'+cat+'" data-stage="'+st.name+'" data-hasbeat="'+(beat?1:0)+'">'+
+          '<span class="box">'+I.check+'</span><span class="lbl">'+(done?'Done today':'Mark done')+'</span>'+
+        '</button>'+
+      '</div></div>';
+  }).join('');
+
+  $('#aiAge').textContent='reading for '+n+' '+u;
+  refreshPlayButtons();
+  renderTracker();
+}
+
+/* ---------- MOVE INTERACTIONS ---------- */
+$('#moves').addEventListener('click',e=>{
+  const pb=e.target.closest('.playbeat');
+  if(pb){
+    if(playingTitle===pb.dataset.title && schedTimer) stopBeat();
+    else startBeat(pb.dataset.title, parseInt(pb.dataset.bpm,10), pb.dataset.sub);
+    return;
+  }
+  const b=e.target.closest('.didbtn'); if(!b)return;
+  toggleDone(b.dataset.title, b.dataset.cat, b.dataset.stage, b.dataset.hasbeat==='1');
+  const nowDone=isDone(b.dataset.title);
+  b.classList.toggle('done',nowDone);
+  b.querySelector('.lbl').textContent=nowDone?'Done today':'Mark done';
+  if(nowDone){ b.classList.remove('justdone'); void b.offsetWidth; b.classList.add('justdone'); }
+  renderTracker();
+});
+
+/* ---------- BEAT BAR CONTROLS ---------- */
+$('#bbStop').addEventListener('click',stopBeat);
+$('#bpmUp').addEventListener('click',()=>setBPM(curBPM+4));
+$('#bpmDown').addEventListener('click',()=>setBPM(curBPM-4));
+
+/* ---------- TRACKER / ANALYSIS ---------- */
+function renderTracker(){
+  const t=todayKey();
+  const today=LOG.filter(e=>e.d===t);
+  const c={see:0,hear:0,move:0}; let beatToday=0;
+  today.forEach(e=>{ if(c[e.c]!=null)c[e.c]++; if(e.b) beatToday++; });
+  $('#rSee').textContent=c.see; $('#rHear').textContent=c.hear; $('#rMove').textContent=c.move;
+  $('#rBeat').textContent=beatToday;
+  $('#todayDate').textContent=new Date().toLocaleDateString(undefined,{month:'short',day:'numeric'});
+
+  let streak=0, started=false;
+  for(let i=0;i<400;i++){
+    const has=LOG.some(e=>e.d===dayKey(i));
+    if(has){ streak++; started=true; }
+    else { if(i===0) continue; break; }
+  }
+  $('#streakN').textContent=streak;
+
+  const wkDays=[]; for(let i=6;i>=0;i--) wkDays.push(dayKey(i));
+  const wk=LOG.filter(e=>wkDays.includes(e.d));
+  $('#weekN').textContent=wk.length;
+  const wc={see:0,hear:0,move:0}; let wkBeat=0;
+  wk.forEach(e=>{ if(wc[e.c]!=null)wc[e.c]++; if(e.b) wkBeat++; });
+  const tot=wc.see+wc.hear+wc.move||1;
+  $('#bal').innerHTML='<span style="background:var(--teal);width:'+(wc.see/tot*100)+'%"></span>'+
+                      '<span style="background:var(--coral);width:'+(wc.hear/tot*100)+'%"></span>'+
+                      '<span style="background:var(--gold);width:'+(wc.move/tot*100)+'%"></span>';
+  const names={see:'See',hear:'Hear',move:'Move'};
+  let topK='see',topV=-1; for(const k of ['see','hear','move']){ if(wc[k]>topV){topV=wc[k];topK=k;} }
+  $('#balTop').textContent = wk.length? ('most: '+names[topK]) : 'no moves yet';
+
+  const dl=['S','M','T','W','T','F','S'];
+  $('#week7').innerHTML=wkDays.map(dk=>{
+    const has=LOG.some(e=>e.d===dk);
+    const dd=new Date(dk+'T00:00:00'); const lbl=dl[dd.getDay()];
+    return '<div class="cell"><div class="dot7 '+(has?'hit':'')+'" title="'+dk+'">'+(has?'✓':'')+'</div><div class="dl">'+lbl+(dk===t?'•':'')+'</div></div>';
+  }).join('');
+
+  const pct = wk.length? Math.round(wkBeat/wk.length*100) : 0;
+  $('#beatLine').innerHTML='<span>♪</span><span>Beat-supported play: <b>'+wkBeat+'</b> of '+wk.length+' moves'+(wk.length?' ('+pct+'%)':'')+'</span>';
+
+  let msg;
+  if(today.length===0){
+    msg="<b>Start here:</b> pick any one move above and tap Mark done. Ten minutes is plenty.";
+  } else {
+    const zero=['see','hear','move'].filter(k=>c[k]===0);
+    if(zero.length===0 && beatToday>0) msg="<b>All three senses plus a beat 🎉</b> — that's a full, varied day.";
+    else if(zero.length===0) msg="<b>All three senses today 🎉</b> Try one with the beat on for an extra layer.";
+    else if(zero.length===1) msg='Nice — '+today.length+' today. For balance, try a <b>'+names[zero[0]]+'</b> activity too.';
+    else msg='Good start — '+today.length+' logged. Variety helps: mix in '+zero.map(k=>names[k]).join(' &amp; ')+' next.';
+  }
+  $('#nudge').innerHTML='<span>💡</span><span>'+msg+'</span>';
+  $('#savedNote').textContent = canSave? 'Saved on this device' : 'This session only';
+}
+
+/* ---------- CHIPS ---------- */
+const QUICK=[['Newborn',1.5],['3 mo',3],['5 mo',5],['6 mo',6],['8 mo',8],['11 mo',11],['14 mo',14]];
+$('#quickChips').innerHTML=QUICK.map(q=>'<button class="chip" data-v="'+q[1]+'">'+q[0]+'</button>').join('');
+function syncChips(){ const m=parseFloat($('#age').value);
+  document.querySelectorAll('#quickChips .chip').forEach(c=>c.classList.toggle('on', Math.abs(parseFloat(c.dataset.v)-m)<0.26)); }
+$('#quickChips').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b)return;
+  $('#age').value=b.dataset.v; render(); syncChips(); });
+
+/* ---------- VIEW TOGGLE ---------- */
+$('#viewToggle').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return;
+  viewMode=b.dataset.v; document.querySelectorAll('#viewToggle button').forEach(x=>x.classList.toggle('on',x===b)); render(); });
+
+/* ---------- LANE ---------- */
+const LANE={
+  tell:[['✓','Follow one-way example videos we provide','var(--teal)'],
+        ['✓','Zero infant imagery is ever collected','var(--teal)'],
+        ['✓','Concerned? Describe it in words → Ask Wiggle','var(--teal)'],
+        ['✓','Same stage-aware guidance & referral','var(--teal)']],
+  show:[['●','You record a short clip of floor play','var(--coral)'],
+        ['●','On-device pose estimation keeps only skeleton points','var(--coral)'],
+        ['●','Raw video deleted by default — never leaves the phone unless you share','var(--coral)'],
+        ['●','You get symmetry, movement-variety and rhythm-response indicators','var(--coral)']]
+};
+function renderLane(l){
+  $('#laneBody').innerHTML = LANE[l].map(r=>'<div class="row"><span class="dot" style="background:'+r[2]+'">'+r[0]+'</span><span>'+r[1]+'</span></div>').join('')
+   + (l==='show'? '<div class="mocknote">In this prototype no video is recorded — the flow is illustrative.</div>':'');
+}
+$('#laneToggle').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b)return;
+  document.querySelectorAll('#laneToggle button').forEach(x=>x.classList.toggle('on',x===b)); renderLane(b.dataset.l); });
+
+/* ---------- ASK WIGGLE ---------- */
+const EXAMPLES=["Not rolling over yet","Doesn't turn to my voice","Always uses the right hand only","One eye seems to drift","Not walking yet"];
+$('#exs').innerHTML=EXAMPLES.map(x=>'<button class="ex">'+x+'</button>').join('');
+$('#exs').addEventListener('click',e=>{ const b=e.target.closest('.ex'); if(!b)return; $('#concern').value=b.textContent; ask(); });
+
+const ROUTES={
+  motor:{who:'Pediatric physiotherapist (PT)', kk:['roll','sit','crawl','stand','walk','head','stiff','floppy','weak','asymmetr','one side','left','right','tummy','leg','kick','balance','tiptoe']},
+  fine:{who:'Occupational therapist (OT)', kk:['hand','grasp','reach','grab','finger','pincer','feed','spoon','mouth','texture','fussy eat','fine','pick up','drop']},
+  comm:{who:'Speech-language / audiology', kk:['hear','sound','voice','name','loud','startle','quiet','babble','talk','word','speech','coo','respond','listen','ear','music','rhythm']},
+  vision:{who:'Pediatric ophthalmology', kk:['eye','look','track','cross','squint','drift','turn in','turn out','see','stare','light','fixate','wander']}
+};
+const REDFLAG=['not moving','lost a skill','lost skills','regress','went backwards','seizure','limp','floppy all','not responding','stopped','stiff all over'];
+function classify(txt){ const t=txt.toLowerCase();
+  for(const r of REDFLAG){ if(t.includes(r)) return {type:'urgent'}; }
+  let best=null,score=0;
+  for(const k in ROUTES){ const val=ROUTES[k]; let s=0; for(const kw of val.kk){ if(t.includes(kw)) s++; } if(s>score){score=s;best={type:k,who:val.who};} }
+  return best||{type:'general'};
+}
+const EXPECT={roll:6, sit:9, crawl:10, stand:12, walk:18, name:9, babble:9, pincer:12, reach:6, track:4};
+function relevantSkill(t){ for(const k in EXPECT){ if(t.includes(k)) return k; } return null; }
+function ask(){
+  const txt=$('#concern').value.trim(); const out=$('#aiOut'), body=$('#aiBody');
+  if(!txt){ out.classList.add('show'); body.innerHTML='<p>Tell me what you\'re seeing and I\'ll point you in the right direction.</p>'; return; }
+  const m=parseFloat($('#age').value); const a=ageLabel(m); const n=a[0], u=a[1];
+  const c=classify(txt); const t=txt.toLowerCase();
+  let verdict, msg, refer='';
+  if(c.type==='urgent'){ verdict=['Please check in soon','urgent'];
+    msg="What you're describing — a lost skill or an unusual whole-body change — is worth prompt attention rather than watchful waiting."; refer='Your pediatrician now';
+  } else if(c.type==='general'){ verdict=["Let's narrow it down",'watch'];
+    msg="I couldn't tell which area this touches. A few more words about what your baby's body, eyes, or sounds are doing will help me point you to the right professional."; refer='Your pediatrician';
+  } else {
+    const who=c.who; const sk=relevantSkill(t); const within = sk ? (m < EXPECT[sk]) : true;
+    if(within && c.type==='motor'){ verdict=['Likely keep playing','ok'];
+      msg='At '+n+' '+u+', this is often still inside the typical range'+(sk?' — many babies reach “'+sk+'” later than the charts suggest':'')+'. Keep offering varied floor practice and watch that both sides are used. If it hasn\'t shifted in 3–4 weeks, or you see a strong side preference, a check is reasonable.';
+      refer=who+' (if it persists)';
+    } else if(!within){ verdict=['Worth a check','pro'];
+      msg='At '+n+' '+u+", I'd gently suggest a professional set of eyes on this — you're past the point where most babies show it, so it's worth ruling things out early while support works best."; refer=who;
+    } else { verdict=['Worth a check','pro'];
+      msg='This sounds best matched to a '+who.split(' (')[0].toLowerCase()+". A short assessment can tell you whether it's typical variation or worth some support."; refer=who;
+    }
+  }
+  $('#aiAge').textContent='reading for '+n+' '+u;
+  body.innerHTML='<div style="margin-bottom:8px"><span class="badge '+verdict[1]+'">'+verdict[0]+'</span></div>'+
+    '<p>'+msg+'</p>'+
+    '<div class="refer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#26303B" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 11 2 2 4-4"/></svg>'+
+    '<span>Suggested next step:&nbsp;<span class="who">'+refer+'</span></span></div>'+
+    '<div class="disc">Prototype triage for a class demo — rule-based, not a diagnosis and not medical advice. Wiggle Room always keeps a human clinician in the loop, and any red-flag pattern routes straight to a pediatrician.</div>';
+  out.classList.add('show');
+}
+$('#askBtn').addEventListener('click',ask);
+
+/* ---------- RESET ---------- */
+$('#resetBtn').addEventListener('click',()=>{
+  if(confirm("Clear your whole log? This can't be undone.")){ LOG=[]; save(); render(); }
+});
+
+/* ---------- KEYBOARD ---------- */
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='TEXTAREA')return;
+  if(e.key==='ArrowRight'){ $('#age').value=Math.min(18,parseFloat($('#age').value)+0.5); render(); syncChips(); }
+  if(e.key==='ArrowLeft'){ $('#age').value=Math.max(0,parseFloat($('#age').value)-0.5); render(); syncChips(); }
+  if(e.code==='Space'){ if(schedTimer){ e.preventDefault(); stopBeat(); } }
+});
+$('#age').addEventListener('input',()=>{render();syncChips();});
+
+/* ---------- INIT ---------- */
+renderLane('tell'); render(); syncChips();
+</script>
+</body>
+</html>
