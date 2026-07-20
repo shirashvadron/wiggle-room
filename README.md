@@ -9,6 +9,11 @@ An AI-guided sensory–motor companion for a baby's first 18 months — an inter
 Final project for **Motor Learning in the Age of AI**, Tel Aviv University (Prof. Jason Friedman).
 
 ---
+<p align="center">
+  <a href="https://USERNAME.github.io/wiggle-room/">
+    <img src="demo.gif" width="720" alt="Wiggle Room prototype — age slider, baby's-eye view, and beat">
+  </a>
+</p>
 
 ## The idea
 
