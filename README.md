@@ -2,7 +2,7 @@
 
 An AI-guided sensory–motor companion for a baby's first 18 months — an interactive prototype.
 
-**▶ Live prototype: (https://shirashvadron.github.io/wiggle-room/)**
+**▶ Live prototype: https://shirashvadron.github.io/wiggle-room/**
 
 > Replace `USERNAME` above with your GitHub username once Pages is enabled.
 
